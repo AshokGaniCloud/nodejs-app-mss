@@ -6,6 +6,9 @@ on:
 
 env:
   REGISTRY: docker.io
+  IMAGE_NAME: ${{ github.repository }}
+  SHA: ${{ github.event.pull_request.head.sha || github.event.after }}
+  COMPARE_TAG: latest
 
 jobs:
   build:
@@ -45,10 +48,6 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{secrets.DOCKER_USERNAME}}
           password: ${{secrets.DOCKER_PASSWORD}}
-      - name: DOcker Scout
-        run: |
-            docker-scout quickview fs://.
-            docker-scout cves fs://.
       - name: Build Image And Push
         run: |
            docker build -t nodeapp:v1 .
@@ -58,10 +57,7 @@ jobs:
            docker push ashokgani6300/nodeapp:v1 
         env:
           DOCKER_CLI_ACI: 1
-      - name:  Docker Scout Scan Image
-        run: |
-          docker-scout quickview ashokgani6300/nodeapp:v1
-          docker-scout cves ashokgani6300/nodeapp:v1
+     
            
         
         
