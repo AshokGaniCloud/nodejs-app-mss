@@ -13,12 +13,17 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Install Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Npm Install
+        run: npm install
       - name: Build And Analyze SonarScan
-        run: node sonar-project.js
+        uses: SonarSource/sonarqube-scan-action@v2.4.0
         env:
           SONAR_HOST_URL: ${{secrets.SONAR_HOST_URL}}
           SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
-      - name: Build Package
-        run: npm install
+    
       
           
