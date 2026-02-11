@@ -50,15 +50,11 @@ jobs:
           password: ${{secrets.DOCKER_PASSWORD}}
       - name: Build Image And Push
         run: |
-           docker build -t nodeapp:v1 .
+           docker build -t nodewebapp:v2 .
            docker images
-           docker tag nodeapp:v1 ashokgani6300/nodeapp:v1
-        env:
-          DOCKER_CLI_ACI: 1
-      - name: Docker Push 
-        run: |
+           docker tag nodewebapp:v2 ashokgani6300/nodewebapp:v2
            echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin docker.io
-           docker push ashokgani6300/nodeapp:v1 
+           docker push ashokgani6300/nodewebapp:v2 
         env:
           DOCKER_CLI_ACI: 1
        
