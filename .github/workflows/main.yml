@@ -20,7 +20,7 @@ jobs:
       - name: Npm Install
         run: npm install
       - name: Build And Analyze SonarScan
-        uses: SonarSource/sonarqube-scan-action@v2.4.0
+        uses: SonarSource/sonarqube-scan-action@v7.0.0
         env:
           SONAR_HOST_URL: ${{secrets.SONAR_HOST_URL}}
           SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
