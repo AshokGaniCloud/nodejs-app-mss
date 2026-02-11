@@ -18,6 +18,7 @@ jobs:
       packages: write
       contents: read
       pull-requests: write
+      
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -69,9 +70,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-       - name: Run Docker Scout compare
-         uses: docker/scout-action@v1
-         with:
+      - name: Run Docker Scout compare
+        uses: docker/scout-action@v1
+        with:
            image: ashokgani6300/nodemyapp:${{ steps.meta.outputs.version }} # The newly built image
            command: compare
            baseline: environment://production
