@@ -4,10 +4,17 @@ on:
     branches:
       - master
 
+env:
+  REGISTRY: docker.io
+
 jobs:
   build:
     name: Build and Deploy
     runs-on: ubuntu-latest
+    permissions: 
+      packages: write
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -24,6 +31,41 @@ jobs:
         env:
           SONAR_HOST_URL: ${{secrets.SONAR_HOST_URL}}
           SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name:  Install Docker BuildX
+        uses: docker/setup-buildx-action@v3.12.0
+        with:
+          driver-opts: |
+            image=moby/buildkit:v0.10.6
+      - name: Npm Start Command
+        run: npm start
+      - name: Docker Login
+        uses: docker/login-action@v3.7.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{secrets.DOCKER_USERNAME}}
+          password: ${{secrets.DOCKER_PASSWORD}}
+      - name: DOcker Scout
+        run: |
+            docker-scout quickview fs://.
+            docker-scout cves fs://.
+      - name: Build Image And Push
+        run: |
+           docker build -t nodeapp:v1 .
+           docker images
+           docker tag nodeapp:v1 ashokgani6300/nodeapp:v1
+           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+           docker push ashokgani6300/nodeapp:v1 
+        env:
+          DOCKER_CLI_ACI: 1
+      - name:  Docker Scout Scan Image
+        run: |
+          docker-scout quickview ashokgani6300/nodeapp:v1
+          docker-scout cves ashokgani6300/nodeapp:v1
+           
+        
+        
     
       
           
