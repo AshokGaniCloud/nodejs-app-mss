@@ -32,8 +32,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Npm ci
-        run: npm ci
+     
       - name: Build and analyze
         run: npm install
       - name: Install Nodejs
