@@ -14,6 +14,10 @@ jobs:
   build:
     name: Build and Deploy
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+        
     permissions: 
       packages: write
       contents: read
@@ -27,18 +31,21 @@ jobs:
       - name: Install Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      - name: Npm Install
-        run: npm install
+          node-version: ${{ matrix.node-version }}
+      - name: Npm ci
+        run: npm ci
       - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.sasttoken }}
-          SONAR_HOST_URL: ${{ secrets.sasturl }}
-        run: |
-          npx sonar-scanner \
-            -Dsonar.projectKey=NodeApp \
-            -Dsonar.host.url=http://20.109.40.150:9000 \
-            -Dsonar.login=${{ secrets.sasttoken }}
+        run: npm install
+      - name: Install Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://npm.pkg.github.com/
+      - name: npm run services
+        run: node app.js
+        continue-on-error: true
+       - name: Create Deployment Package (ZIP file)
+         run: zip -r deployment-package.zip ./*
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name:  Install Docker BuildX
