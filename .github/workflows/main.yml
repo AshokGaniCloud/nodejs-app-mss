@@ -30,11 +30,15 @@ jobs:
           node-version: '20'
       - name: Npm Install
         run: npm install
-      #- name: Build And Analyze SonarScan
-       # uses: SonarSource/sonarqube-scan-action@v7.0.0
-        #env:
-         # SONAR_HOST_URL: ${{secrets.SONAR_HOST_URL}}
-          #SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+      - name: Build and analyze
+       env:
+          SONAR_TOKEN: ${{ secrets.sasttoken }}
+          SONAR_HOST_URL: ${{ secrets.sasturl }}
+       run: |
+          npx sonar-scanner \
+            -Dsonar.projectKey=NodeApp \
+            -Dsonar.host.url=http://20.109.40.150:9000 \
+            -Dsonar.login=${{ secrets.sasttoken }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name:  Install Docker BuildX
