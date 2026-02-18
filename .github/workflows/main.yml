@@ -44,8 +44,8 @@ jobs:
       - name: npm run services
         run: node app.js
         continue-on-error: true
-       - name: Create Deployment Package (ZIP file)
-         run: zip -r deployment-package.zip ./*
+      - name: Create Deployment Package (ZIP file)
+        run: zip -r deployment-package.zip ./*
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name:  Install Docker BuildX
