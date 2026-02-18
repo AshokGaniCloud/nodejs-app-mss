@@ -31,10 +31,10 @@ jobs:
       - name: Npm Install
         run: npm install
       - name: Build and analyze
-       env:
+        env:
           SONAR_TOKEN: ${{ secrets.sasttoken }}
           SONAR_HOST_URL: ${{ secrets.sasturl }}
-       run: |
+        run: |
           npx sonar-scanner \
             -Dsonar.projectKey=NodeApp \
             -Dsonar.host.url=http://20.109.40.150:9000 \
@@ -55,18 +55,18 @@ jobs:
           password: ${{secrets.DOCKER_PASSWORD}}
       - name: Build Image And Push
         run: |
-           docker build -t nodejsdeploy:v1 .
+           docker build -t nodejsdeployapp:v2 .
            docker images
-           docker tag nodejsdeploy:v1 ashokgani6300/nodejsdeploy:v1
+           docker tag nodejsdeployapp:v2 ashokgani6300/nodejsdeployapp:v2
            echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin docker.io
-           docker push ashokgani6300/nodejsdeploy:v1
+           docker push ashokgani6300/nodejsdeployapp:v2
         env:
           DOCKER_CLI_ACI: 1
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ashokgani6300/nodejsdeploy
+          images: ashokgani6300/nodejsdeployapp
       - name: Build and push new image
         uses: docker/build-push-action@v5
         with:
@@ -77,7 +77,7 @@ jobs:
       - name: Run Docker Scout compare
         uses: docker/scout-action@v1
         with:
-           image: ashokgani6300/nodejsdeploy:${{ steps.meta.outputs.version }} # The newly built image
+           image: ashokgani6300/nodejsdeployapp:${{ steps.meta.outputs.version }} # The newly built image
            command: compare
            baseline: environment://production
            only-severity: critical,high
