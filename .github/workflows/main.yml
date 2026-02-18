@@ -51,18 +51,18 @@ jobs:
           password: ${{secrets.DOCKER_PASSWORD}}
       - name: Build Image And Push
         run: |
-           docker build -t nodewebapp:v2 .
+           docker build -t nodejsdeploy:v1 .
            docker images
-           docker tag nodewebapp:v2 ashokgani6300/nodewebapp:v2
+           docker tag nodejsdeploy:v1 ashokgani6300/nodejsdeploy:v1
            echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin docker.io
-           docker push ashokgani6300/nodewebapp:v2 
+           docker push ashokgani6300/nodejsdeploy:v1
         env:
           DOCKER_CLI_ACI: 1
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ashokgani6300/nodemyapp
+          images: ashokgani6300/nodejsdeploy
       - name: Build and push new image
         uses: docker/build-push-action@v5
         with:
@@ -73,7 +73,7 @@ jobs:
       - name: Run Docker Scout compare
         uses: docker/scout-action@v1
         with:
-           image: ashokgani6300/nodemyapp:${{ steps.meta.outputs.version }} # The newly built image
+           image: ashokgani6300/nodejsdeploy:${{ steps.meta.outputs.version }} # The newly built image
            command: compare
            baseline: environment://production
            only-severity: critical,high
