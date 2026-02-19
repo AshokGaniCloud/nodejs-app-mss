@@ -9,6 +9,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   SHA: ${{ github.event.pull_request.head.sha || github.event.after }}
   COMPARE_TAG: latest
+  SYNK_TOKEN: '75323634-9882-4456-8ac3-60655dccb4c0'
 
 jobs:
   build:
@@ -21,6 +22,8 @@ jobs:
     permissions: 
       packages: write
       contents: read
+      security-events: write
+      actions: read
       pull-requests: write
       
     steps:
@@ -40,7 +43,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://npm.pkg.github.com/
-      
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ env.SNYK_TOKEN }}
+        with:
+          command: monitor
+          args: --severity-threshold=high
        
       - name: Create Deployment Package (ZIP file)
         run: zip -r deployment-package.zip ./*
@@ -58,6 +67,17 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{secrets.DOCKER_USERNAME}}
           password: ${{secrets.DOCKER_PASSWORD}}
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        env:
+          SNYK_TOKEN: ${{ env.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk.sarif
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk.sarif
       - name: Build Image And Push
         run: |
            docker build -t nodejsdeployapp:v2 .
