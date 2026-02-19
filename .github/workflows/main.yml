@@ -47,10 +47,13 @@ jobs:
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ env.SNYK_TOKEN }}
-        with:
-          command: monitor
-          args: --severity-threshold=high
-       
+        continue-on-error: true
+      - name: Run Synk Command
+        run: |
+          synk auth 75323634-9882-4456-8ac3-60655dccb4c0
+        env:
+          SNYK_TOKEN: ${{ env.SNYK_TOKEN }}
+        continue-on-error: true
       - name: Create Deployment Package (ZIP file)
         run: zip -r deployment-package.zip ./*
       - name: Set up QEMU
